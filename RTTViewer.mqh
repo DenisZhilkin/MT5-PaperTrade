@@ -10,68 +10,70 @@
 #include <Controls\Dialog.mqh>
 #include <Controls\ListView.mqh>
 
-#define TRADING_STATE_LEFT      (5)
-#define TRADING_STATE_TOP       (15)
-#define TRADING_STATE_WIDTH     (350)
-#define TRADING_STATE_HEIGHT    (50)
-#define TRADING_STATE_PADDING   (5)
-;
-class CTradingState : public CAppDialog
-{
-public:
-    int a;
+#define PT_STATE_LEFT     			 (0)
+#define PT_STATE_TOP      			 (25)
+#define PT_STATE_WIDTH    			 (500)
+#define PT_STATE_HEIGHT   			 (300)
+#define PT_STATE_PADDING  			 (1)
 
+class CPTState : public CAppDialog
+{
 protected:
-    string message;
     CListView list_view;
-
 public:
-    CTradingState()
-    {
-        message = "Hello! I`m a Menu!";
-    }
+    CPTState() {};
+    ~CPTState() {};
 
-    bool Create(const long chart,const string name,const int subwin,const int x1,const int y1,const int x2,const int y2)
-    {
-        // int x1 = TRADING_STATE_LEFT;
-        // int y1 = TRADING_STATE_TOP;
-        // int x2 = TRADING_STATE_LEFT + TRADING_STATE_WIDTH;
-        // int y2 = TRADING_STATE_TOP + TRADING_STATE_HEIGHT;
-        if(!CAppDialog::Create(chart,name,subwin,x1,y1,x2,y2))
-            return false;
-        if(!CreateListView())
-            return false;
-        return true;
-    }
-
-    void PrintMessage()
-    {
-        Alert(message);
-    }
+    virtual bool Create(void);
 
 protected:
-    bool CreateListView()
-    {
-        int x1 = TRADING_STATE_LEFT + TRADING_STATE_PADDING;
-        int y1 = TRADING_STATE_TOP + TRADING_STATE_PADDING;
-        int x2 = TRADING_STATE_LEFT + TRADING_STATE_WIDTH - TRADING_STATE_PADDING;
-        int y2 = TRADING_STATE_TOP + TRADING_STATE_HEIGHT - TRADING_STATE_PADDING;
-        if(!list_view.Create(0, "TradingState_OrdersPositions", 0, x1, y1, x2, y2))
-            return false;
-        if(!Add(list_view))
-            return false;
-        return true;
-    }
+    bool CreateListView(void);
 };
 
-class CProfitChart
+bool CPTState::Create(void)
+{
+	int x1 = PT_STATE_LEFT;
+    int y1 = PT_STATE_TOP;
+    int x2 = PT_STATE_LEFT + PT_STATE_WIDTH;
+    int y2 = PT_STATE_TOP + PT_STATE_HEIGHT;
+    if(!CAppDialog::Create(0, "PaperTrade Orders & Positions", 0, x1, y1, x2, y2))
+        return false;
+    if(!CreateListView())
+        return false;
+    return true;
+}
+
+bool CPTState::CreateListView(void)
+{
+    int x1 = PT_STATE_PADDING;
+    int y1 = PT_STATE_PADDING;
+    int x2 = PT_STATE_WIDTH - PT_STATE_PADDING - 8;
+    int y2 = PT_STATE_HEIGHT - CONTROLS_DIALOG_CAPTION_HEIGHT - PT_STATE_PADDING - 7;
+    if(!list_view.Create(m_chart_id, "RTT_OP", m_subwin, x1, y1, x2, y2))
+        return false;
+    if(!Add(list_view))
+        return false;
+    if(!list_view.AddItem("Symbol | TimeOpened | B/S | Vol | Price |  S/L  |  T/P  | PnL"))
+    	return(false); //  USDRUB  22:56:50:123   B     5    74045   73999   75011   1059
+    return true;
+}
+
+/*
+class CPTChart
 {
 
 };
 
-class CRTTViewer
+class CPTBook
+{
+
+};
+
+class CPTViewer
 {
 public:
-    CTradingState trading_state;
-    CProfitChart profit_chart;
+    CPTState pt_state;
+    CPTChart pt_chart;
 };
+/**/
+
