@@ -12,11 +12,14 @@
 
 #define PT_STATE_LEFT     			 (0)
 #define PT_STATE_TOP      			 (25)
-#define PT_STATE_WIDTH    			 (500)
+#define PT_STATE_WIDTH    			 (470)
 #define PT_STATE_HEIGHT   			 (300)
 #define PT_STATE_PADDING  			 (1)
 #define PT_STATE_CAPTION			 "PaperTrade Positions & Orders"
 #define PT_STATE_LIST_NAME			 "pt_state_op"
+#define PT_SYMBOL_LEN				 (10)
+#define PT_VOLUME_LEN				 (3)
+#define PT_PRICE_LEN				 (7)
 
 class CPTState : public CAppDialog
 {
@@ -29,9 +32,16 @@ protected:
 public:
     CPTState() {m_positions_first = NULL; m_positions_last = NULL; m_orders_first = NULL; m_orders_last = NULL;};
     ~CPTState() {};
+    
     bool Create(void);
     /*, datetime time, string dest, string type, long vol, double price, double sl, double tp*/
-    bool AddOrder(string symbol);
+    bool AddOrder(string symbol, datetime time_placed, string dest, long vol, double price);
+    //bool UpdateOrder(string symbol) {};
+    //bool RemoveOrder(string symbol) {};
+    //bool OpenPosition(string symbol) {};
+    //bool UpdatePosition(string symbol) {};
+    //bool ClosePosition(string symbol) {};
+    //bool UpdateAccount(double m) {};
 protected:
     bool CreateListView(void);
 };
@@ -56,28 +66,57 @@ bool CPTState::CreateListView(void)
     int x2 = PT_STATE_WIDTH - PT_STATE_PADDING - 8;
     int y2 = PT_STATE_HEIGHT - CONTROLS_DIALOG_CAPTION_HEIGHT - PT_STATE_PADDING - 7;
     string spacer = "";
-    StringInit(spacer, 42, 32); // 32 is ANSI space character
+    StringInit(spacer, 20, 95); // 32 is ANSI space character; 95 is "_"
     if(!m_list_view.Create(m_chart_id, PT_STATE_LIST_NAME, m_subwin, x1, y1, x2, y2))
         return false;
     if(!Add(m_list_view))
         return false;
-    if(!m_list_view.ItemAdd(spacer + "Positions"))
+    if(!m_list_view.ItemAdd(spacer + "Positions"  + spacer + "_"))
     	return false;
-    if(!m_list_view.ItemAdd("Symbol | TimeOpened | B/S | Vol | Price |  S/L  |  T/P  | PnL"))
-    	return false; //   USDRUB  22:56:50:123   B     5    74045   73999   75011   1059
+    if(!m_list_view.ItemAdd("   Symbol   |       Time Opened       | B/S | Vol |  PnL    "))
+    	return false;
     if(!m_list_view.ItemAdd(""))
     	return false;
-    if(!m_list_view.ItemAdd(spacer + "Orders"))
+    StringInit(spacer, 21, 95);
+    if(!m_list_view.ItemAdd(spacer + "Orders" + spacer + "_"))
     	return false;
-   	if(!m_list_view.ItemAdd("Symbol | TimePlaced | B/S | TYPE | Vol | Price |  S/L  |  T/P"))
-    	return false;
+   	if(!m_list_view.ItemAdd("_Symbol_|______Time Placed______|B/S|Vol|__Price___"))
+    	return false; //                20.05.2021 19:00:45.572
     return true;
 }
 /*, datetime time, string dest, string type, long vol, double price, double sl, double tp*/
-bool CPTState::AddOrder(string symbol)
+bool CPTState::AddOrder(string symbol, datetime time_placed, string dest, long vol, double price)
 {
-	string new_order;
-	new_order = symbol;
+	string spacer = "";
+	int markstofill = PT_SYMBOL_LEN - StringLen(symbol);
+	if(markstofill < 0)
+	{
+		Print("Error: too long symbol name: " + symbol);
+		return false;
+	}
+	StringInit(spacer, markstofill, 32);
+	string new_order = symbol + spacer + " | ";
+	new_order += TimeToString(time_placed, TIME_DATE|TIME_SECONDS) + ".572" + " |  ";
+	new_order += dest + "  | ";
+	string strvol = (string)vol;
+	markstofill = PT_VOLUME_LEN - StringLen(strvol);
+	if(markstofill < 0)
+	{
+		Print("Error: too long volume: " + strvol);
+		return false;
+	}
+	StringInit(spacer, markstofill, 32);
+	new_order += strvol + spacer + "| ";
+	int digits = (int)SymbolInfoInteger(symbol, SYMBOL_DIGITS);
+	string strprice = DoubleToString(price, digits);
+	markstofill = PT_PRICE_LEN - StringLen(strprice);
+	if(markstofill < 0)
+	{
+		Print("Error: too long price: " + strprice);
+		return false;
+	}
+	StringInit(spacer, markstofill, 32);
+	new_order += strprice + spacer;
 	if(!m_list_view.ItemAdd(new_order))
 		return false;
 	if(m_orders_first == NULL)
