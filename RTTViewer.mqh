@@ -16,7 +16,7 @@
 #define PT_STATE_HEIGHT   			 (300)
 #define PT_STATE_PADDING  			 (1)
 #define PT_STATE_CAPTION			 "PaperTrade Positions & Orders"
-#define PT_STATE_LIST_NAME			 "pt_state_op"
+#define PT_STATE_LIST_NAME			 "pt_state_po"
 #define PT_SYMBOL_LEN				 (10)
 #define PT_VOLUME_LEN				 (3)
 #define PT_PRICE_LEN				 (7)
