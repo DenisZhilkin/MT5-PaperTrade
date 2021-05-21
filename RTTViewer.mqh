@@ -35,7 +35,7 @@ public:
     
     bool Create(void);
     /*, datetime time, string dest, string type, long vol, double price, double sl, double tp*/
-    bool AddOrder(string symbol, datetime time_placed, string dest, long vol, double price);
+    bool AddOrder(string symbol, string time_placed, string dest, long vol, double price);
     //bool UpdateOrder(string symbol) {};
     //bool RemoveOrder(string symbol) {};
     //bool OpenPosition(string symbol) {};
@@ -85,7 +85,7 @@ bool CPTState::CreateListView(void)
     return true;
 }
 /*, datetime time, string dest, string type, long vol, double price, double sl, double tp*/
-bool CPTState::AddOrder(string symbol, datetime time_placed, string dest, long vol, double price)
+bool CPTState::AddOrder(string symbol, string time_placed, string dest, long vol, double price)
 {
 	string spacer = "";
 	int markstofill = PT_SYMBOL_LEN - StringLen(symbol);
@@ -96,7 +96,7 @@ bool CPTState::AddOrder(string symbol, datetime time_placed, string dest, long v
 	}
 	StringInit(spacer, markstofill, 32);
 	string new_order = symbol + spacer + " | ";
-	new_order += TimeToString(time_placed, TIME_DATE|TIME_SECONDS) + ".572" + " |  ";
+	new_order += time_placed + " |  ";
 	new_order += dest + "  | ";
 	string strvol = (string)vol;
 	markstofill = PT_VOLUME_LEN - StringLen(strvol);
@@ -147,4 +147,3 @@ public:
     //CPTChart pt_chart;
 };
 /**/
-
