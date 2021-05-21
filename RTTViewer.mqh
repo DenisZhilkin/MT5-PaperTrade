@@ -73,18 +73,18 @@ bool CPTState::CreateListView(void)
         return false;
     if(!m_list_view.ItemAdd(spacer + "Positions"  + spacer + "_"))
     	return false;
-    if(!m_list_view.ItemAdd("   Symbol   |       Time Opened       | B/S | Vol |  PnL    "))
+    if(!m_list_view.ItemAdd("_Symbol__|______Time Opened_____|B/S|Vol|__PnL_____"))
     	return false;
     if(!m_list_view.ItemAdd(""))
     	return false;
     StringInit(spacer, 21, 95);
     if(!m_list_view.ItemAdd(spacer + "Orders" + spacer + "_"))
     	return false;
-   	if(!m_list_view.ItemAdd("_Symbol_|______Time Placed______|B/S|Vol|__Price___"))
+   	if(!m_list_view.ItemAdd("_Symbol__|______Time Placed______|B/S|Vol|__Price___"))
     	return false; //                20.05.2021 19:00:45.572
     return true;
 }
-/*, datetime time, string dest, string type, long vol, double price, double sl, double tp*/
+
 bool CPTState::AddOrder(string symbol, string time_placed, string dest, long vol, double price)
 {
 	string spacer = "";
@@ -94,8 +94,9 @@ bool CPTState::AddOrder(string symbol, string time_placed, string dest, long vol
 		Print("Error: too long symbol name: " + symbol);
 		return false;
 	}
-	StringInit(spacer, markstofill, 32);
-	string new_order = symbol + spacer + " | ";
+	int nspaces = (int)((double)markstofill * 1.7);
+	StringInit(spacer, nspaces, 32);
+	string new_order = symbol + spacer + "| ";
 	new_order += time_placed + " |  ";
 	new_order += dest + "  | ";
 	string strvol = (string)vol;
