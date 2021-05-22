@@ -7,12 +7,19 @@
 #property link      "https://github.com/DenisZhilkin/RealTimeTester"
 #property version   "1.00"
 
+#include <Controls\Defines.mqh>
+
+#undef  CONTROLS_FONT_NAME
+#define CONTROLS_FONT_NAME			 "Consolas"
+
 #include <Controls\Dialog.mqh>
 #include <Controls\ListView.mqh>
 
+
+
 #define PT_STATE_LEFT     			 (0)
 #define PT_STATE_TOP      			 (25)
-#define PT_STATE_WIDTH    			 (470)
+#define PT_STATE_WIDTH    			 (495)
 #define PT_STATE_HEIGHT   			 (300)
 #define PT_STATE_PADDING  			 (1)
 #define PT_STATE_CAPTION			 "PaperTrade Positions & Orders"
@@ -66,21 +73,21 @@ bool CPTState::CreateListView(void)
     int x2 = PT_STATE_WIDTH - PT_STATE_PADDING - 8;
     int y2 = PT_STATE_HEIGHT - CONTROLS_DIALOG_CAPTION_HEIGHT - PT_STATE_PADDING - 7;
     string spacer = "";
-    StringInit(spacer, 20, 95); // 32 is ANSI space character; 95 is "_"
+    StringInit(spacer, 22, 45); // 32 is ANSI space character; 95 is "_"; 45 is "-" 
     if(!m_list_view.Create(m_chart_id, PT_STATE_LIST_NAME, m_subwin, x1, y1, x2, y2))
         return false;
     if(!Add(m_list_view))
         return false;
-    if(!m_list_view.ItemAdd(spacer + "Positions"  + spacer + "_"))
+    if(!m_list_view.ItemAdd(spacer + "Positions"  + spacer))
     	return false;
-    if(!m_list_view.ItemAdd("_Symbol__|______Time Opened_____|B/S|Vol|__PnL_____"))
+    if(!m_list_view.ItemAdd("--Symbol--|------Time Opened------|B/S|Vol|--PnL-----"))
     	return false;
     if(!m_list_view.ItemAdd(""))
     	return false;
-    StringInit(spacer, 21, 95);
-    if(!m_list_view.ItemAdd(spacer + "Orders" + spacer + "_"))
+    StringInit(spacer, 23, 45);
+    if(!m_list_view.ItemAdd(spacer + "Orders" + spacer + "-"))
     	return false;
-   	if(!m_list_view.ItemAdd("_Symbol__|______Time Placed______|B/S|Vol|__Price___"))
+   	if(!m_list_view.ItemAdd("--Symbol--|------Time Placed------|B/S|Vol|--Price---"))
     	return false; //                20.05.2021 19:00:45.572
     return true;
 }
@@ -94,11 +101,10 @@ bool CPTState::AddOrder(string symbol, string time_placed, string dest, long vol
 		Print("Error: too long symbol name: " + symbol);
 		return false;
 	}
-	int nspaces = (int)((double)markstofill * 1.7);
-	StringInit(spacer, nspaces, 32);
-	string new_order = symbol + spacer + "| ";
-	new_order += time_placed + " |  ";
-	new_order += dest + "  | ";
+	StringInit(spacer, markstofill, 32);
+	string new_order = symbol + spacer + "|";
+	new_order += time_placed + "| ";
+	new_order += dest + " |";
 	string strvol = (string)vol;
 	markstofill = PT_VOLUME_LEN - StringLen(strvol);
 	if(markstofill < 0)
@@ -107,7 +113,7 @@ bool CPTState::AddOrder(string symbol, string time_placed, string dest, long vol
 		return false;
 	}
 	StringInit(spacer, markstofill, 32);
-	new_order += strvol + spacer + "| ";
+	new_order += spacer + strvol + "|";
 	int digits = (int)SymbolInfoInteger(symbol, SYMBOL_DIGITS);
 	string strprice = DoubleToString(price, digits);
 	markstofill = PT_PRICE_LEN - StringLen(strprice);
@@ -117,7 +123,7 @@ bool CPTState::AddOrder(string symbol, string time_placed, string dest, long vol
 		return false;
 	}
 	StringInit(spacer, markstofill, 32);
-	new_order += strprice + spacer;
+	new_order += spacer + strprice;
 	if(!m_list_view.ItemAdd(new_order))
 		return false;
 	if(m_orders_first == NULL)
