@@ -15,8 +15,6 @@
 #include <Controls\Dialog.mqh>
 #include <Controls\ListView.mqh>
 
-
-
 #define PT_STATE_LEFT     			 (0)
 #define PT_STATE_TOP      			 (25)
 #define PT_STATE_WIDTH    			 (495)
