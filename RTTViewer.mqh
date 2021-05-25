@@ -39,10 +39,10 @@ protected:
     int m_orders_first;
     int m_orders_last;
 public:
-    CPTState() : m_positions_first(NULL),
-    			 m_positions_last(NULL),
-    			 m_orders_first(NULL),
-    			 m_orders_last(NULL)
+    CPTState() : m_positions_first(-1),
+    			 m_positions_last(-1),
+    			 m_orders_first(-1),
+    			 m_orders_last(-1)
     {};
     ~CPTState() {};
     
@@ -164,7 +164,7 @@ bool CPTState::AddPosition(string symbol, string time_opened, string dest, long 
 	StringInit(spacer, markstofill, 32);
 	new_position += spacer + strpnl;
 	int index;
-	if(m_positions_first == NULL)
+	if(m_positions_first < 0)
 	{
 		index = PT_STATE_POSITIONS_INDEX;
 	}
@@ -174,7 +174,7 @@ bool CPTState::AddPosition(string symbol, string time_opened, string dest, long 
 	}
 	if(!m_list_view.ItemInsert(index, new_position))
 		return false;
-	if(m_positions_first != NULL)
+	if(!(m_positions_first < 0))
 	{
 		m_positions_last++;
 	}
@@ -183,7 +183,7 @@ bool CPTState::AddPosition(string symbol, string time_opened, string dest, long 
 		m_positions_first = PT_STATE_POSITIONS_INDEX;
 		m_positions_last = PT_STATE_POSITIONS_INDEX;
 	}
-	if(m_orders_first == NULL)
+	if(m_orders_first < 0)
 	{
 		m_orders_first = PT_STATE_ORDERS_INDEX;
 		m_orders_last = PT_STATE_ORDERS_INDEX; 
@@ -196,6 +196,7 @@ bool CPTState::AddPosition(string symbol, string time_opened, string dest, long 
 
 bool CPTState::UpdatePosition(int index, double new_pnl, long new_vol=NULL)
 {
+	if(m_positions_first < 0) return false;
 	index += m_positions_first;
 	if(index < m_positions_first || index > m_positions_last)
 	{
@@ -243,7 +244,7 @@ bool CPTState::AddOrder(string symbol, string time_placed, string dest, long vol
 	new_order += spacer + strprice;
 	if(!m_list_view.ItemAdd(new_order))
 		return false;
-	if(m_orders_first != NULL)
+	if(m_orders_first < 0)
 	{
 		m_orders_last++;
 	}
