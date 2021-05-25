@@ -22,9 +22,11 @@
 #define PT_STATE_PADDING  			 (1)
 #define PT_STATE_CAPTION			 "PaperTrade Positions & Orders"
 #define PT_STATE_LIST_NAME			 "pt_state_po"
-#define PT_SYMBOL_LEN				 (10)
-#define PT_VOLUME_LEN				 (3)
-#define PT_LASTCOL_LEN				 (10)
+#define PT_STATE_SYMBOL_LEN			 (10)
+#define PT_STATE_TIME_LEN			 (23)
+#define PT_STATE_BS_LEN				 (3)
+#define PT_STATE_VOLUME_LEN			 (3)
+#define PT_STATE_LASTCOL_LEN		 (10)
 #define PT_STATE_ORDERS_INDEX        (5) // initial m_orders_first = m_orders_last
 #define PT_STATE_POSITIONS_INDEX     (3) // initial m_positions_first = m_positions_last
 
@@ -49,12 +51,13 @@ public:
     //bool UpdateOrder(string symbol) {};
     //bool RemoveOrder(string symbol) {};
     bool AddPosition(string symbol, string time_opened, string dest, long vol, double pnl);
-    //bool UpdatePosition(string symbol) {};
+    bool UpdatePosition(int index, double new_pnl, long new_vol);
     //bool RemovePosition(string symbol) {};
     bool UpdateAccount(double balance, double equity, double freemargin);
 protected:
     bool CreateListView(void);
     bool BuildCommonCols(string symbol, string time_placed, string dest, long vol, string& colstring);
+    bool NormalizeField(string& field, int len);
 };
 
 bool CPTState::Create(void)
@@ -109,7 +112,7 @@ bool CPTState::UpdateAccount(double balance, double equity, double freemargin)
 bool CPTState::BuildCommonCols(string symbol, string time, string dest, long vol, string& colstring)
 {
 	string spacer = "";
-	int markstofill = PT_SYMBOL_LEN - StringLen(symbol);
+	int markstofill = PT_STATE_SYMBOL_LEN - StringLen(symbol);
 	if(markstofill < 0)
 	{
 		Print("Error: too long symbol name: " + symbol);
@@ -120,7 +123,7 @@ bool CPTState::BuildCommonCols(string symbol, string time, string dest, long vol
 	colstring += time + "| ";
 	colstring += dest + " |";
 	string strvol = (string)vol;
-	markstofill = PT_VOLUME_LEN - StringLen(strvol);
+	markstofill = PT_STATE_VOLUME_LEN- StringLen(strvol);
 	if(markstofill < 0)
 	{
 		Print("Error: too long volume: " + strvol);
@@ -131,6 +134,20 @@ bool CPTState::BuildCommonCols(string symbol, string time, string dest, long vol
 	return true;
 }
 
+bool CPTState::NormalizeField(string& field, int len)
+{
+	int markstofill = len - StringLen(field);
+	if(markstofill < 0)
+	{
+		Print("Error: too long field: " + field);
+		return false;
+	}
+	string spacer = "";
+	StringInit(spacer, markstofill, 32);
+	field = spacer + field;
+	return true;
+}
+
 bool CPTState::AddPosition(string symbol, string time_opened, string dest, long vol, double pnl)
 {
 	string new_position = "";
@@ -138,7 +155,7 @@ bool CPTState::AddPosition(string symbol, string time_opened, string dest, long 
 		return false;
 	string strpnl = DoubleToString(pnl, 2);
 	string spacer = "";
-	int markstofill = PT_LASTCOL_LEN - StringLen(strpnl);
+	int markstofill = PT_STATE_LASTCOL_LEN - StringLen(strpnl);
 	if(markstofill < 0)
 	{
 		Print("Error: too long PnL: " + strpnl);
@@ -177,6 +194,37 @@ bool CPTState::AddPosition(string symbol, string time_opened, string dest, long 
 	return true;
 }
 
+bool CPTState::UpdatePosition(int index, double new_pnl, long new_vol=NULL)
+{
+	index += m_positions_first;
+	if(index < m_positions_first || index > m_positions_last)
+	{
+		// log
+		return false;
+	}
+	if(!m_list_view.Select(index)) return false;
+	string row = m_list_view.Select();
+	int edge = PT_STATE_SYMBOL_LEN + PT_STATE_TIME_LEN + PT_STATE_BS_LEN + 3; // 3{|}
+	if(new_vol != NULL)
+	{
+		row = StringSubstr(row, 0, edge);
+		string strvol = (string)new_vol;
+		NormalizeField(strvol, PT_STATE_VOLUME_LEN);
+		row += strvol + "|";
+	}
+	else
+	{
+		row = StringSubstr(row, 0, edge + PT_STATE_VOLUME_LEN + 1);
+	}
+	string strpnl = DoubleToString(new_pnl, 2);
+	NormalizeField(strpnl, PT_STATE_LASTCOL_LEN);
+	row += strpnl;
+	if(!m_list_view.ItemUpdate(index, row))
+		return false;
+	ChartRedraw();
+	return true;
+}
+
 bool CPTState::AddOrder(string symbol, string time_placed, string dest, long vol, double price)
 {
 	string new_order = "";
@@ -185,7 +233,7 @@ bool CPTState::AddOrder(string symbol, string time_placed, string dest, long vol
 	string spacer = "";
 	int digits = (int)SymbolInfoInteger(symbol, SYMBOL_DIGITS);
 	string strprice = DoubleToString(price, digits);
-	int markstofill = PT_LASTCOL_LEN - StringLen(strprice);
+	int markstofill = PT_STATE_LASTCOL_LEN - StringLen(strprice);
 	if(markstofill < 0)
 	{
 		Print("Error: too long price: " + strprice);
