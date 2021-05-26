@@ -10,7 +10,7 @@
 #include <Controls\Defines.mqh>
 
 #undef  CONTROLS_FONT_NAME
-#define CONTROLS_FONT_NAME			 "Consolas"
+#define CONTROLS_FONT_NAME          "Consolas"
 
 #include <Controls\Dialog.mqh>
 #include <Controls\ListView.mqh>
