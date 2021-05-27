@@ -174,6 +174,8 @@ bool CPTState::AddPosition(string symbol, string time_opened, string dest, long 
     }
     if(!m_list_view.ItemInsert(index, new_position))
         return false;
+    if(!m_list_view.Select(m_list_view.Current() + 1))
+    	return false;
     if(!(m_positions_first < 0))
     {
         m_positions_last++;
@@ -203,8 +205,10 @@ bool CPTState::UpdatePosition(int index, double new_pnl, long new_vol=NULL)
         // log
         return false;
     }
+    int initial_index = m_list_view.Current();
     if(!m_list_view.Select(index)) return false;
     string row = m_list_view.Select();
+    if(!m_list_view.Select(initial_index)) return false;
     int edge = PT_STATE_SYMBOL_LEN + PT_STATE_TIME_LEN + PT_STATE_BS_LEN + 3; // 3{|}
     if(new_vol != NULL)
     {
