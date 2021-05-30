@@ -1,8 +1,5 @@
 # Real Time Tester
 
-### Simple and Powerfull library for testing your trading strategies on Real market in Real time
+### Simple library for automated paper trading within MetaTrader 5 platform using any mql5 trading strategy, including scalping and hft.
 ---
 ## [ i! ] This project is developing now...
----
-## Idea for example script:
-collect big position: buying or selling (depends on input setting) contracts of selected symbol one by one until full desired size of position will be formed
