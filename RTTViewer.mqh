@@ -208,10 +208,10 @@ bool CPTState::UpdatePosition(int index, double new_pnl, long new_vol=NULL)
     index += m_positions_first;
     if(index < m_positions_first || index > m_positions_last)
     {
-        // log
+        Print("PT State UpdatePosition Error: index out of range: " + (string)index);
         return false;
     }
-    int initial_index = m_list_view.Current();
+    int initial_index = m_list_view.Current() != -1 ? m_list_view.Current() : 0;
     if(!m_list_view.Select(index)) return false;
     string row = m_list_view.Select();
     if(!m_list_view.Select(initial_index)) return false;
