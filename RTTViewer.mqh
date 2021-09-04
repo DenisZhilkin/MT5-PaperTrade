@@ -52,7 +52,7 @@ public:
     //bool RemoveOrder(string symbol) {};
     bool AddPosition(string symbol, string time_opened, string dest, long vol, double pnl);
     bool UpdatePosition(int index, double new_pnl, long new_vol);
-    //bool RemovePosition(string symbol) {};
+    bool RemovePosition(int index);
     bool UpdateAccount(double balance, double equity, double freemargin);
 protected:
     bool CreateListView(void);
@@ -232,6 +232,42 @@ bool CPTState::UpdatePosition(int index, double new_pnl, long new_vol=NULL)
     row += strpnl;
     if(!m_list_view.ItemUpdate(index, row))
         return false;
+    ChartRedraw();
+    return true;
+}
+
+bool CPTState::RemovePosition(int index)
+{
+	if(m_positions_first < 0) return false;
+    index += m_positions_first;
+    if(index < m_positions_first || index > m_positions_last)
+    {
+        Print("PT State RemovePosition Error: index out of range: " + (string)index);
+        return false;
+    }
+    if(m_list_view.Current() >= index)
+	{
+        int new_index;
+        if(m_list_view.Current() > index)
+            new_index = m_list_view.Current() - 1;
+        else
+            new_index = 0;	
+        if(!m_list_view.Select(new_index))
+	    	return false;
+	}
+    if(!m_list_view.ItemDelete(index))
+    	return false;
+    if(m_positions_first == m_positions_last)
+    {
+    	m_positions_first = -1;
+    	m_positions_last = -1;
+    }
+    else
+    {
+    	m_positions_last--;
+    }
+    m_orders_first--;
+    m_orders_last--;
     ChartRedraw();
     return true;
 }
