@@ -254,7 +254,7 @@ bool CPTState::AddOrder(string symbol, string time_placed, string dest, long vol
     new_order += spacer + strprice;
     if(!m_list_view.ItemAdd(new_order))
         return false;
-    if(m_orders_first < 0)
+    if(m_orders_first > 0)
     {
         m_orders_last++;
     }
