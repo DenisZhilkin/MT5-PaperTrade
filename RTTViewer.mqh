@@ -172,11 +172,9 @@ bool CPTState::AddPosition(string symbol, string time_opened, string dest, long 
     {
         index = m_positions_last + 1;
     }
-    if(!m_list_view.ItemInsert(index, new_position))
+	if(!m_list_view.ItemInsert(index, new_position))
         return false;
-    if(!m_list_view.Select(m_list_view.Current() + 1))
-    	return false;
-    if(!(m_positions_first < 0))
+    if(m_positions_first > 0) // cannot be 0 cause there is a balance string on that position
     {
         m_positions_last++;
     }
@@ -192,6 +190,14 @@ bool CPTState::AddPosition(string symbol, string time_opened, string dest, long 
     }
     m_orders_first++;
     m_orders_last++;
+    if(m_list_view.Current() >= index && m_list_view.Current() < m_orders_last)
+    {
+		if(!m_list_view.Select(m_list_view.Current() + 1))
+		{
+			Print("Error: selection update failed");
+			return false;
+		}
+	}
     ChartRedraw();
     return true;
 }
