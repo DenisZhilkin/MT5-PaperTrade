@@ -11,9 +11,10 @@
 //|         1. Complete method ItemDelete with my additional code.   |
 //|         2. TODO: solve problem with scrollbar visibility         |
 //|                                                                  |
-//|     WHY? Inheriting from CListView is impossible in cause of     |
-//|     private access to some of it`s members which is needed to be |
-//|     accessible in my additional code.                            |
+//|     WHY? Inheriting from CListView, it`s is impossible to patch  |
+//|     ItemDelete method in cause of private access to some members |
+//|     of the class, which is needed to be accessible in my         |
+//|     additional code.                                             |
 //|                                                     DenisZhilkin |
 //|                                  https://github.com/DenisZhilkin |
 //|                                                                  |
@@ -36,7 +37,7 @@ private:
    int               m_offset;              // index of first visible row in array of rows
    int               m_total_view;          // number of visible rows
    int               m_item_height;         // height of visible row
-   bool              m_height_variable;     // признак переменной высоты списка
+   bool              m_height_variable;     // ГЇГ°ГЁГ§Г­Г ГЄ ГЇГҐГ°ГҐГ¬ГҐГ­Г­Г®Г© ГўГ»Г±Г®ГІГ» Г±ГЇГЁГ±ГЄГ 
    //--- data
    CArrayString      m_strings;             // array of rows
    CArrayLong        m_values;              // array of values
