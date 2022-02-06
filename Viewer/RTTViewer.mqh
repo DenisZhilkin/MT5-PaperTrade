@@ -30,61 +30,6 @@
 #define PT_STATE_ORDERS_INDEX        (5) // initial m_orders_first = m_orders_last
 #define PT_STATE_POSITIONS_INDEX     (3) // initial m_positions_first = m_positions_last
 
-/*
-class CPatchedListView : public CListView
-{
-public:
-    virtual bool ItemDelete(const int index);
-};
-
-//+------------------------------------------------------------------+
-//| Delete item (row)                                                |
-//+------------------------------------------------------------------+
-bool CPatchedListView::ItemDelete(const int index)
-  {
-//--- delete
-   if(!m_strings.Delete(index))
-      return(false);
-   if(!m_values.Delete(index))
-      return(false);
-//--- number of items
-   int total=m_strings.Total();
-//--- exit if number of items does not exceed the size of visible area
-   if(total<m_total_view)
-     {
-      if(m_height_variable && total!=0)
-        {
-         Height(total*m_item_height+2*CONTROLS_BORDER_WIDTH);
-         m_rows[total].Hide();
-        }
-      return(Redraw());
-     }
-//--- if number of items exceeded the size of visible area
-   if(total==m_total_view)
-     {
-      Print("Remove scroll");
-      // move to the top of the list
-      m_offset = 0;
-      //--- disable vertical scrollbar
-      if(!VScrolled(false))
-         return(false);
-      //--- and immediately make it unvisible
-      if(!OnVScrollHide())
-         return(false);
-     }
-
-   int off_index = total - m_total_view;
-   if(total > m_total_view && m_current > off_index)
-   {
-      if(m_offset > off_index)
-         m_offset = off_index;
-   }
-//--- set up the scrollbar
-   m_scroll_v.MaxPos(m_strings.Total()-m_total_view);
-//--- redraw
-   return(Redraw());
-  }
-/**/
 
 class CPTState : public CAppDialog
 {
