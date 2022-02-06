@@ -9,7 +9,7 @@
 //|    To provide correctness to my product - MT5-PaperTrade I had   |
 //|    to add few code lines to this method, which are marked by     |
 //|    comment lines with "Patch" label                              |
-//|    Pathed Bug: scrollbar disapears to early, while ListView      |
+//|    Patched Bug: scrollbar disapears too early, while ListView    |
 //|    still has some items outside visible area                     |
 //+------------------------------------------------------------------+
 #property copyright "Denis Zhilkin"
