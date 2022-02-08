@@ -30,6 +30,10 @@
 #define PT_STATE_ORDERS_INDEX        (5) // initial m_orders_first = m_orders_last
 #define PT_STATE_POSITIONS_INDEX     (3) // initial m_positions_first = m_positions_last
 
+// Проблема со скроллом: скролл не появляется при выходе списка за пределы поля
+// Как достигается: 
+// 1. Выделить одну из нижних ячеек и сходить с ней за пределы поля.
+// 2. Выделить ячейку, не выходящую за пределы поля и при следующем выходе списка скролла не будет.
 
 class CPTState : public CAppDialog
 {
@@ -49,8 +53,8 @@ public:
     
     bool Create(void);
     bool AddOrder(string symbol, string time_placed, string dest, long vol, double price);
-    //bool UpdateOrder(string symbol) {};
-    //bool RemoveOrder(string symbol) {};
+    bool UpdateOrder(const long id, const double price) {return true};
+    bool RemoveOrder(const long id) {return true};
     bool AddPosition(string symbol, string time_opened, string dest, long vol, double pnl);
     bool UpdatePosition(int index, double new_pnl, long new_vol);
     bool RemovePosition(int index);
