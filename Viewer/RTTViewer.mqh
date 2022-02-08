@@ -43,18 +43,20 @@ protected:
     int m_positions_last;
     int m_orders_first;
     int m_orders_last;
+    long m_id_counter;
 public:
     CPTState() : m_positions_first(-1),
                  m_positions_last(-1),
                  m_orders_first(-1),
-                 m_orders_last(-1)
+                 m_orders_last(-1),
+                 m_id_counter(0)
     {};
     ~CPTState() {};
     
     bool Create(void);
-    bool AddOrder(string symbol, string time_placed, string dest, long vol, double price);
-    bool UpdateOrder(const long id, const double price) {return true};
-    bool RemoveOrder(const long id) {return true};
+    long AddOrder(const string symbol, const string time_placed, const string destination, const long volume, const double price);
+    bool UpdateOrder(const long id, const double price) {return true;};
+    bool RemoveOrder(const long id) {return true;};
     bool AddPosition(string symbol, string time_opened, string dest, long vol, double pnl);
     bool UpdatePosition(int index, double new_pnl, long new_vol);
     bool RemovePosition(int index);
@@ -277,24 +279,26 @@ bool CPTState::RemovePosition(int index)
     return true;
 }
 
-bool CPTState::AddOrder(string symbol, string time_placed, string dest, long vol, double price)
+long CPTState::AddOrder(const string symbol, const string time_placed, const string destination, const long volume, const double price)
 {
     string new_order = "";
-    if(!BuildCommonCols(symbol, time_placed, dest, vol, new_order))
-        return false;
+    if (!BuildCommonCols(symbol, time_placed, destination, volume, new_order))
+    {
+        return -1;
+    }
     string spacer = "";
-    int digits = (int)SymbolInfoInteger(symbol, SYMBOL_DIGITS);
+    int digits = (int) SymbolInfoInteger(symbol, SYMBOL_DIGITS);
     string strprice = DoubleToString(price, digits);
     int markstofill = PT_STATE_LASTCOL_LEN - StringLen(strprice);
     if(markstofill < 0)
     {
         Print("Error: too long price: " + strprice);
-        return false;
+        return -1;
     }
     StringInit(spacer, markstofill, 32);
     new_order += spacer + strprice;
-    if(!m_list_view.ItemAdd(new_order))
-        return false;
+    if(!m_list_view.ItemAdd(new_order, m_id_counter))
+        return -1;
     if(m_orders_first > 0)
     {
         m_orders_last++;
@@ -305,7 +309,7 @@ bool CPTState::AddOrder(string symbol, string time_placed, string dest, long vol
         m_orders_last = PT_STATE_ORDERS_INDEX;
     }
     ChartRedraw();
-    return true;
+    return m_id_counter++;
 }
 
 /*
