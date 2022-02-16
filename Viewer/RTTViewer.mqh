@@ -34,6 +34,11 @@
 // Как достигается: 
 // 1. Выделить одну из нижних ячеек и сходить с ней за пределы поля.
 // 2. Выделить ячейку, не выходящую за пределы поля и при следующем выходе списка скролла не будет.
+// Как лечится: свернуть и развернуть окно - всё возвращается в исходное состояние - скролл снова начинает появляться
+
+// Actually order can`t just change it`s price. The only way to
+// update order is to
+// remove order and then create new order with new params. 
 
 class CPTState : public CAppDialog
 {
@@ -55,8 +60,7 @@ public:
     
     bool Create(void);
     long AddOrder(const string symbol, const string time_placed, const string destination, const long volume, const double price);
-    bool UpdateOrder(const long id, const double price) {return true;};
-    bool RemoveOrder(const long id) {return true;};
+    bool RemoveOrder(const long id);
     bool AddPosition(string symbol, string time_opened, string dest, long vol, double pnl);
     bool UpdatePosition(int index, double new_pnl, long new_vol);
     bool RemovePosition(int index);
@@ -310,6 +314,12 @@ long CPTState::AddOrder(const string symbol, const string time_placed, const str
     }
     ChartRedraw();
     return m_id_counter++;
+}
+
+bool RemoveOrder(const long id)
+{
+
+    return false;
 }
 
 /*
